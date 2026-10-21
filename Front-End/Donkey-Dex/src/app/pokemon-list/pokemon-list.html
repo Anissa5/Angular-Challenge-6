@@ -1,0 +1,194 @@
+<div class="pokedex-page">
+
+  <div class="pokedex-device">
+
+    <header class="pokedex-header">
+      <div class="pokedex-lens"></div>
+      <div class="pokedex-small-light"></div>
+      <div class="pokedex-small-light yellow"></div>
+      <div class="pokedex-small-light green"></div>
+      <h1>POKÉDEX</h1>
+      <p>POKÉMON DATABASE</p>
+    </header>
+
+    <section class="pokedex-screen">
+      <div class="screen-top">
+        <span>POKÉMON OBSERVÉ</span>
+        @if (selectedPokemon) {
+          <span>N° {{ selectedPokemon.id | number:'3.0-0' }}</span>
+        }
+      </div>
+
+      @if (selectedPokemon; as selected) {
+        <div class="selected-pokemon">
+          <img
+            class="selected-image"
+            [src]="selected.image"
+            [alt]="selected.name"
+          >
+
+          <div class="selected-info">
+            <h2>{{ selected.name }}</h2>
+
+            <div class="pokemon-types">
+              @for (type of selected.types ?? []; track type) {
+                <span class="type-badge">{{ translateType(type) }}</span>
+              }
+            </div>
+
+            <button
+              class="details-button"
+              type="button"
+              (click)="selectPokemon(selected)"
+            >
+              Voir la fiche complète
+            </button>
+
+            <button
+              class="details-button"
+              type="button"
+              (click)="addToCollection(selected)"
+            >
+              Ajouter à Mes Pokémon
+            </button>
+
+@if (collectionMessage) {
+  <p class="collection-message">{{ collectionMessage }}</p>
+}
+          </div>
+        </div>
+      } @else {
+        <div class="screen-empty">
+          <p>SÉLECTIONNE UN POKÉMON</p>
+          <span>Choisis un Pokémon dans la liste ci-dessous.</span>
+        </div>
+      }
+    </section>
+
+    <div class="pokedex-controls">
+      <h2>RECHERCHE</h2>
+
+      <div class="pokemon-controls">
+        <input
+          class="search-input"
+          type="text"
+          [(ngModel)]="searchTerm"
+          placeholder="Rechercher un Pokémon..."
+        >
+
+        <select class="type-select" [(ngModel)]="selectedType">
+          <option value="all">Tous les types</option>
+          <option value="grass">Plante</option>
+          <option value="fire">Feu</option>
+          <option value="water">Eau</option>
+          <option value="electric">Électrik</option>
+          <option value="poison">Poison</option>
+          <option value="normal">Normal</option>
+          <option value="flying">Vol</option>
+          <option value="bug">Insecte</option>
+          <option value="ground">Sol</option>
+          <option value="fairy">Fée</option>
+          <option value="fighting">Combat</option>
+          <option value="psychic">Psy</option>
+          <option value="rock">Roche</option>
+          <option value="steel">Acier</option>
+          <option value="ice">Glace</option>
+          <option value="ghost">Spectre</option>
+          <option value="dragon">Dragon</option>
+          <option value="dark">Ténèbres</option>
+        </select>
+
+        <button
+          class="favorites-button"
+          type="button"
+          (click)="showFavoritesOnly = !showFavoritesOnly"
+        >
+          {{ showFavoritesOnly ? 'Afficher tous' : '★ Mes favoris' }}
+        </button>
+      </div>
+    </div>
+
+    <section class="pokemon-selection">
+      <h2>CHOISIS TON POKÉMON</h2>
+
+      <div class="pokemon-grid">
+
+        @for (pokemonItem of filteredPokemons(); track pokemonItem.name) {
+          <article
+            class="pokemon-card"
+            [class.selected-card]="selectedPokemon?.id === pokemonItem.id"
+            (click)="selectedPokemon = pokemonItem"
+          >
+            <p class="pokemon-number">
+              #{{ pokemonItem.id | number:'3.0-0' }}
+            </p>
+
+            <img
+              class="pokemon-image"
+              [src]="pokemonItem.image"
+              [alt]="pokemonItem.name"
+            >
+
+
+            <h3>{{ pokemonItem.name }}</h3>
+
+            <div class="pokemon-types">
+              @for (type of pokemonItem.types ?? []; track type) {
+                <span class="type-badge">{{ translateType(type) }}</span>
+              }
+            </div>
+
+            <button
+              class="favorite-button"
+              type="button"
+              [attr.aria-label]="pokemonItem.isFavorite ? 'Retirer des favoris' : 'Ajouter aux favoris'"
+              (click)="$event.stopPropagation(); toggleFavorite(pokemonItem)"
+            >
+              {{ pokemonItem.isFavorite ? '★' : '☆' }}
+            </button>
+          </article>
+        }
+      </div>
+
+
+    </section>
+
+     <section class="my-pokemons">
+      <h2>MES POKÉMON</h2>
+
+      @if (deleteMessage) {
+        <p>{{ deleteMessage }}</p>
+}
+
+      @if (myPokemons.length === 0) {
+        <p>Tu n'as pas encore de Pokémon dans ta collection.</p>
+      } @else {
+        <div class="pokemon-grid">
+          @for (pokemon of myPokemons; track pokemon.id) {
+            <article class="pokemon-card">
+              <p class="pokemon-number">
+                #{{ pokemon.pokemon_api_id | number:'3.0-0' }}
+              </p>
+
+              <img class="pokemon-image"
+                [src]="'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/' + pokemon.pokemon_api_id + '.png'"
+                alt]="pokemon.name"
+              >
+
+              <h3>{{ pokemon.name }}</h3>
+
+              <button
+                class="remove-button"
+                type="button"
+                (click)="removeFromCollection(pokemon)"
+              >
+                Retirer de ma collection
+              </button>
+            </article>
+          }
+        </div>
+      }
+    </section>
+
+  </div>
+</div>

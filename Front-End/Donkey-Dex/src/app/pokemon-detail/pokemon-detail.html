@@ -1,0 +1,102 @@
+<div class="detail-pokedex">
+
+  <header class="detail-header">
+    <div class="detail-lens"></div>
+    <div class="detail-lights">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+    <h1>POKÉDEX</h1>
+    <p>FICHE D'IDENTIFICATION</p>
+  </header>
+
+  <a [routerLink]="['/']" class="back-button">
+    ← Retour à la liste
+  </a>
+
+  @if (pokemon) {
+    <section class="detail-screen">
+
+      <div class="detail-screen-top">
+        <span>DONNÉES DU POKÉMON</span>
+        <span>N° {{ pokemon.id }}</span>
+      </div>
+
+      <div class="pokemon-identity">
+        @if (pokemon.image) {
+          <div class="detail-image-frame">
+            <img [src]="pokemon.image" [alt]="pokemon.name">
+          </div>
+        }
+
+        <div class="pokemon-summary">
+          <h2>{{ pokemon.name }}</h2>
+
+          <p class="pokemon-number">
+            NUMÉRO NATIONAL #{{ pokemon.id }}
+          </p>
+
+          <h3>Types</h3>
+
+          <div class="pokemon-types">
+            @for (type of pokemon.types; track type) {
+              <span class="type-badge">
+                {{ translateType(type) }}
+              </span>
+            }
+          </div>
+        </div>
+      </div>
+
+      <section class="detail-panel">
+        <h3>STATISTIQUES DE COMBAT</h3>
+
+        @for (stat of pokemon.stats; track stat.name) {
+          <div class="stat-row">
+            <strong>{{ translateStat(stat.name) }}</strong>
+
+            <div class="stat-bar">
+              <div
+                class="stat-fill"
+                [style.width.%]="stat.value"
+                [ngClass]="stat.value < 50 ? 'stat-low' : stat.value < 70 ? 'stat-medium' : 'stat-high'"
+              ></div>
+            </div>
+
+            <span class="stat-value">{{ stat.value }}</span>
+          </div>
+        }
+      </section>
+
+      @if (evolutions.length > 0) {
+        <section class="detail-panel evolution-panel">
+          <h3>CHAÎNE D'ÉVOLUTION</h3>
+
+          <div class="evolution-list">
+            @for (evolution of evolutions; track evolution.id) {
+              <div class="evolution-card">
+                <a [routerLink]="['/pokemon', evolution.id]">
+                  <img [src]="evolution.image" [alt]="evolution.name">
+                  <span class="evolution-number">
+                    N° {{ evolution.id }}
+                  </span>
+                  <span class="evolution-name">
+                    {{ evolution.name }}
+                  </span>
+                </a>
+              </div>
+            }
+          </div>
+        </section>
+      }
+
+    </section>
+  } @else {
+    <section class="detail-screen loading-screen">
+      <p>LECTURE DES DONNÉES...</p>
+      <p>Chargement du Pokémon...</p>
+    </section>
+  }
+
+</div>
